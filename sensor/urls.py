@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
@@ -9,5 +10,6 @@ urlpatterns = [
     url('dht11_sensor', views.dht11Sensor, name='dht11Sensor'),
     url('photo_sensor', views.photoSensor, name='photoSensor'),
     url('distance_sensor', views.distanceSensor, name='distanceSensor'),
+    url('index', views.index, name='index'),
     url('camera', views.camera, name='camera'),
 ]

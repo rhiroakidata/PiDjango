@@ -5,9 +5,12 @@ import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 import Adafruit_DHT
 
+import threading
+
 from picamera import PiCamera
 
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
+from django.shortcuts import render
 
 sys.path.append('/home/pi/Desktop/workspace/tests/Pidjango/sensor')
 from utils import clean
@@ -122,18 +125,54 @@ def distanceSensor(request):
 
     return HttpResponse(message)
 
+def index(request):
+    print('0')
+    # return the rendered template
+    return render(request, "index.html", {})
+
+# class VideoCamera(object):
+#     def __init__(self, resolution=(320, 240), framerate=32):
+#         from imutils.video.pivideostream import PiVideoStream
+#         self.video = PiVideoStream(resolution=resolution, framerate=framerate)
+#         self.frame = self.video.read()
+#         t = threading.Thread(target=self.update, args=())
+#         t.daemon = True
+#         t.start()
+#         time.sleep(2.0)
+
+#     def start(self):
+#         # start the threaded video stream
+#         return self.video.start()
+#     def update(self):
+#         # grab the next frame from the stream
+#         self.video.update()
+#     def read(self):
+#         # return the current frame
+#         return self.video.read()
+#     def stop(self):
+#         # stop the thread and release any resources
+#         self.video.stop()
+#     def get_frame(self):
+#         image = self.frame
+#         ret, jpeg = cv2.imencode('.jpg', image)
+#         return jpeg.tobytes()
+
+from camera_pi import Camera
+
+def generate(cam):
+	# loop over frames from the output stream
+    while True:
+        # encode the frame in JPEG format
+        encodedImage = cam.get_frame()
+
+        # yield the output frame in the byte format
+        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
+            encodedImage + b'\r\n')
+
 def camera(request):
-    camera = PiCamera()
-
-    camera.start_preview()
-
-    time.sleep(5)
-
-    camera.stop_preview()
-
-
-
- 
+    print('1')
+    cam = Camera()
+    return StreamingHttpResponse(generate(cam), content_type = "multipart/x-mixed-replace; boundary=frame")
 
 
 
