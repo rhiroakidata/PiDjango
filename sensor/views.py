@@ -15,9 +15,8 @@ from django.shortcuts import render
 sys.path.append('/home/pi/Desktop/workspace/tests/Pidjango/sensor')
 from utils import clean
 
-GPIO.setmode(GPIO.BCM)
-
 def turnOn(request):
+    GPIO.setmode(GPIO.BCM)
     LED_PIN = 26
     GPIO.setup(LED_PIN, GPIO.OUT)
     GPIO.output(LED_PIN, 1)
@@ -26,6 +25,7 @@ def turnOn(request):
     return HttpResponse('Led aceso')
 
 def gasSensor(request):
+    GPIO.setmode(GPIO.BCM)
     GPIO.setup(16, GPIO.IN)
     if GPIO.input(16):
         messageGas = 'Ambiente Bom'
@@ -90,6 +90,7 @@ def photoSensor(request):
         return HttpResponse(message)
     
 def distanceSensor(request):
+    GPIO.setmode(GPIO.BCM)
     trig = 24
     echo = 23
     sampling_rate = 20.0
@@ -126,7 +127,6 @@ def distanceSensor(request):
     return HttpResponse(message)
 
 def index(request):
-    print('0')
     # return the rendered template
     return render(request, "index.html", {})
 
@@ -170,7 +170,6 @@ def generate(cam):
             encodedImage + b'\r\n')
 
 def camera(request):
-    print('1')
     cam = Camera()
     return StreamingHttpResponse(generate(cam), content_type = "multipart/x-mixed-replace; boundary=frame")
 

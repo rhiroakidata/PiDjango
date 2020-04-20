@@ -3,3 +3,5 @@
 sensor/__pycache__/
 
 zenbox/__pycache__/
+
+venv/

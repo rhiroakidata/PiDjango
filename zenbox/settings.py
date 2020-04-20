@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ["localhost", "192.168.15.72", "127.0.0.1"]
 INSTALLED_APPS = [
     'sensor',
     'rest_framework',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
