@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ["localhost", "192.168.15.72", "127.0.0.1"]
 
 INSTALLED_APPS = [
     'sensor',
+    'users',
     'rest_framework',
     'corsheaders',
     'django.contrib.admin',
@@ -50,7 +51,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
+
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_WHITELIST = (
+       'http://localhost:3000',
+)
 
 ROOT_URLCONF = 'zenbox.urls'
 
@@ -78,8 +86,12 @@ WSGI_APPLICATION = 'zenbox.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'zenbox',
+        'USER': 'zenbox_user',
+        'PASSWORD': 'zenbox',
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
     }
 }
 
@@ -121,3 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Photos
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/photos/'

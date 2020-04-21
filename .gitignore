@@ -1,7 +1,9 @@
 .vscode/
 
 sensor/__pycache__/
-
+sensor/migrations/__pycache__/
 zenbox/__pycache__/
+users/__pycache__/
+users/migrations/__pycache__/
 
 venv/
