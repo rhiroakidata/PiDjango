@@ -1,10 +1,17 @@
+from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.csrf import csrf_exempt
+from django.core import serializers as srl
+from django.forms.models import model_to_dict
+
 from .models import User
 from .serializers import *
+
+import bcrypt, json
 
 @api_view(['GET', 'POST'])
 def users_list(request):
@@ -41,11 +48,11 @@ def users_list(request):
 
     elif request.method == 'POST':
         serializer = UserSerializer(data=request.data)
-        print('1')
         if serializer.is_valid():
-            print('2')
-            serializer.save()
+            password = bcrypt.hashpw(request.data['password'].encode('utf-8'), bcrypt.gensalt(14))
+            serializer.save(password=password)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -72,3 +79,34 @@ def users_detail(request, pk):
     elif request.method == 'DELETE':
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@csrf_exempt
+@api_view(['POST'])
+def login(request):
+    print('Entrei')
+    if request.method == 'POST':
+        email = request.data['email']
+        password = request.data['password']
+ 
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+
+            password = password.encode('utf-8')
+            hashed = user.password
+
+            if bcrypt.checkpw(password, hashed):
+                # {'user': user, 'token': token}
+                token = Token.objects.create(user=user)
+
+                data = {'token': str(token), 'user': model_to_dict(user)}
+ 
+                data['user']['date_joined'] = data['user']['date_joined'].strftime('%Y-%m-%d %H:%M:%S')
+                data['user']['picture'] = data['user']['picture'].url if data['user']['picture'] else ''
+
+                return Response(json.dumps(data), status=status.HTTP_200_OK, content_type="application/json")
+
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        else: 
+            return Response(status=status.HTTP_404_NOT_FOUND)
