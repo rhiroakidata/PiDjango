@@ -12,5 +12,6 @@ urlpatterns = [
     url('distance_sensor', views.distanceSensor, name='distanceSensor'),
     url('index', views.index, name='index'),
     url('camera', views.camera, name='camera'),
+    url('take_photo', views.take_photo, name='take_photo'),
     #url(r'^take_photo/(?P<pk>[0-9]+)$', views.take_photo)
 ]
